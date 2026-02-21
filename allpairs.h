@@ -40,6 +40,7 @@
 //
 #ifndef _ALLPAIRS_H_
 #define _ALLPAIRS_H_
+#define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS
 
 #include <vector>
 

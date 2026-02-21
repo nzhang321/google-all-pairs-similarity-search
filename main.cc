@@ -31,6 +31,12 @@ int main(int argc, char** argv) {
   time_t start_time;
   time(&start_time);
 
+  const int max_memory_usage = 4294967296;
+  const int max_feature_id = 600000; // previously set max feature id, size for a single vector
+  const int max_features_in_ram_1gb = 120000000; // previously set max features in ram for 1 gb
+  const int overhead = (max_memory_usage / 4) - (sizeof(std::vector<uint32_t>) * max_feature_id) - (2 * sizeof(uint32_t) * max_features_in_ram_1gb) ;// computing the previously unallocated overhead within the 1 gb limit
+  const int max_features_in_ram_4gb = (max_memory_usage - (sizeof(std::vector<uint32_t>) * max_feature_id) - (overhead * 4)) / (2 * sizeof(uint32_t)); // computing how much max_features_in_ram can be set for 4gb
+
   // Verify input arguments.
   if (argc != 3) {
     std::cerr << "ERROR: Usage is: ./ap <sim_threshold> <dataset_path>\n";
@@ -51,7 +57,7 @@ int main(int argc, char** argv) {
       return 3;
     AllPairs ap;
     bool result =
-        ap.FindAllSimilarPairs(threshold, data.get(), 600000, 120000000);
+        ap.FindAllSimilarPairs(threshold, data.get(), max_feature_id, max_features_in_ram_4gb);
     if (!result) {
       std::cerr << "ERROR: " << data->GetErrorMessage() << "\n";
       return 4;
